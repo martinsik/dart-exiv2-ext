@@ -3,8 +3,8 @@
 //
 
 #include "include/dart_native_api.h"
-#include "include/dart_api.h"
-#include "exiv2.hpp"
+//#include "include/dart_api.h"
+#include "exiv2/exiv2.hpp"
 
 
 Dart_NativeFunction ResolveName(Dart_Handle name, int argc, bool* auto_setup_scope);
