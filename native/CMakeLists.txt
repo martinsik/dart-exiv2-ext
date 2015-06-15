@@ -19,6 +19,8 @@ message(STATUS "exiv2_LIBRARY: " ${exiv2_LIBRARY})
 message(STATUS "exiv2_HEADERS_DIR: " ${exiv2_HEADERS_DIR})
 message(STATUS "DART_SDK: " ${DART_SDK})
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/../../lib/src)
+
 link_libraries(${exiv2_LIBRARY})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -arch i386 -arch x86_64 -Wl,-undefined,dynamic_lookup -I${DART_SDK} -I${exiv2_HEADERS_DIR}")

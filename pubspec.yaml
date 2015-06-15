@@ -1,0 +1,6 @@
+name: dart-exiv2-ext
+version: 0.0.1
+dependencies:
+    ccompile: "^0.2.9"
+dev_dependencies:
+    test: any

@@ -13,6 +13,8 @@ packages
 # Include when developing application packages.
 pubspec.lock
 
+lib/src/libexiv2_wrapper.dylib
+
 CMakeCache.txt
 CMakeFiles
 Makefile

@@ -9,7 +9,7 @@
 
 Dart_NativeFunction ResolveName(Dart_Handle name, int argc, bool* auto_setup_scope);
 
-DART_EXPORT Dart_Handle exiv2_Init(Dart_Handle parent_library) {
+DART_EXPORT Dart_Handle exiv2_wrapper_Init(Dart_Handle parent_library) {
     if (Dart_IsError(parent_library)) {
         return parent_library;
     }
@@ -67,7 +67,7 @@ void GetAllExifRecords(Dart_NativeArguments arguments) {
     //     Dart_NewStringFromCString("Map"), 0, NULL);
 
     // Dart_Handle map = Dart_New(dartMapType, Dart_Null(), 0, NULL);
-
+//Dart_Invoke()
 
     Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
     image->readMetadata();
