@@ -3,7 +3,7 @@
 //
 
 #include "include/dart_native_api.h"
-//#include "include/dart_api.h"
+#include "include/dart_api.h"
 #include "exiv2/exiv2.hpp"
 
 
@@ -67,6 +67,7 @@ void GetAllExifRecords(Dart_NativeArguments arguments) {
     //     Dart_NewStringFromCString("Map"), 0, NULL);
 
     // Dart_Handle map = Dart_New(dartMapType, Dart_Null(), 0, NULL);
+
 
     Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
     image->readMetadata();
