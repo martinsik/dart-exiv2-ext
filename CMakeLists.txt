@@ -25,4 +25,4 @@ link_libraries(${exiv2_LIBRARY})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -arch i386 -arch x86_64 -Wl,-undefined,dynamic_lookup -I${DART_SDK} -I${exiv2_HEADERS_DIR}")
 
-add_library(exiv2_wrapper SHARED exiv2_wrapper.cpp)
+add_library(exiv2_wrapper SHARED native/exiv2_wrapper.cpp)

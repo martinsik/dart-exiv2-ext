@@ -62,12 +62,11 @@ void GetAllExifRecords(Dart_NativeArguments arguments) {
     Dart_StringToCString(Dart_GetNativeArgument(arguments, 0), &filename);
 
     // Use Map object instead?
-    // Dart_Handle dartMapType = Dart_GetType(
-    //     Dart_LookupLibrary(Dart_NewStringFromCString("dart:core")),
-    //     Dart_NewStringFromCString("Map"), 0, NULL);
+    Dart_Handle dartMapType = Dart_GetType(
+         Dart_LookupLibrary(Dart_NewStringFromCString("dart:core")),
+         Dart_NewStringFromCString("Map"), 0, NULL);
 
-    // Dart_Handle map = Dart_New(dartMapType, Dart_Null(), 0, NULL);
-//Dart_Invoke()
+    Dart_Handle map = Dart_New(dartMapType, Dart_Null(), 0, NULL);
 
     Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
     image->readMetadata();
@@ -75,18 +74,15 @@ void GetAllExifRecords(Dart_NativeArguments arguments) {
     Exiv2::ExifData::const_iterator end = exifData.end();
     Exiv2::ExifData::const_iterator pointer = exifData.begin();
 
-    Dart_Handle result = Dart_NewList(exifData.count());
-
     // iterate all EXIF records
     for (int j = 0; pointer != end; ++pointer, j++) {
-        // create \t delimetered char*
-        std::stringstream fmt;
-        fmt << pointer->key() << "\t" << pointer->value();
-        const char *record = fmt.str().c_str();
-        Dart_ListSetAt(result, j, Dart_NewStringFromCString(record));
+        Dart_Handle mapSetKeyValueArgs[2];
+        mapSetKeyValueArgs[0] = Dart_NewStringFromCString(pointer->key().c_str());
+        mapSetKeyValueArgs[1] = Dart_NewStringFromCString(pointer->value().toString().c_str());
+        Dart_Invoke(map, Dart_NewStringFromCString("[]="), 2, mapSetKeyValueArgs);
     }
 
-    Dart_SetReturnValue(arguments, result);
+    Dart_SetReturnValue(arguments, map);
     Dart_ExitScope();
 }
 
