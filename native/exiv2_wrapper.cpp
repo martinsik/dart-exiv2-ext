@@ -32,6 +32,7 @@ Dart_Handle HandleError(Dart_Handle handle) {
 void GetExifRecord(Dart_NativeArguments arguments) {
     Dart_EnterScope();
 
+    Dart_Handle result;
     const char *filename;
     const char *tag;
     Dart_StringToCString(Dart_GetNativeArgument(arguments, 0), &filename);
@@ -40,15 +41,12 @@ void GetExifRecord(Dart_NativeArguments arguments) {
     Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
     image->readMetadata();
     Exiv2::ExifData &exifData = image->exifData();
-    Exiv2::ExifKey key = Exiv2::ExifKey(tag);
-    Exiv2::ExifData::const_iterator pos = exifData.findKey(key);
-
-    Dart_Handle result;
-
-    if (pos == exifData.end()) { // not found
-        result = Dart_Null();
-    } else {
+    try {
+        Exiv2::ExifKey key = Exiv2::ExifKey(tag);
+        Exiv2::ExifData::const_iterator pos = exifData.findKey(key);
         result = Dart_NewStringFromCString(pos->value().toString().c_str());
+    } catch (Exiv2::AnyError &e) {
+        result = result = Dart_Null();
     }
 
     Dart_SetReturnValue(arguments, result);
@@ -86,6 +84,18 @@ void GetAllExifRecords(Dart_NativeArguments arguments) {
     Dart_ExitScope();
 }
 
+// source: https://github.com/dart-lang/sdk/blob/master/samples/sample_extension/sample_extension.cc
+struct FunctionLookup {
+    const char* name;
+    Dart_NativeFunction function;
+};
+
+FunctionLookup function_list[] = {
+    {"GetAllExifRecords", GetAllExifRecords},
+    {"GetExifRecord", GetExifRecord},
+    {NULL, NULL}
+};
+
 Dart_NativeFunction ResolveName(Dart_Handle name,
                                 int argc,
                                 bool* auto_setup_scope) {
@@ -102,10 +112,12 @@ Dart_NativeFunction ResolveName(Dart_Handle name,
     const char* cname;
     HandleError(Dart_StringToCString(name, &cname));
 
-    if (strcmp("GetAllExifRecords", cname) == 0) {
-        result = GetAllExifRecords;
-    } else if (strcmp("GetExifRecord", cname) == 0) {
-        result = GetExifRecord;
+    for (int i=0; function_list[i].name != NULL; ++i) {
+        if (strcmp(function_list[i].name, cname) == 0) {
+            *auto_setup_scope = true;
+            result = function_list[i].function;
+            break;
+        }
     }
 
     Dart_ExitScope();
