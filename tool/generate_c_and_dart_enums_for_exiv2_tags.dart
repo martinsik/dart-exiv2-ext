@@ -7,7 +7,8 @@ import 'package:xml/xml.dart';
 
 var packageRootDir = (new Directory.fromUri(Platform.script).parent.parent).path;
 var templateDir = packageRootDir + Platform.pathSeparator + 'tool' + Platform.pathSeparator + 'templates';
-var targetNativeFile = packageRootDir + Platform.pathSeparator + 'native' + Platform.pathSeparator + 'exiv2_enums.h';
+var targetCFile = packageRootDir + Platform.pathSeparator + 'native' + Platform.pathSeparator + 'exiv2_enums.h';
+var targetDartFile = packageRootDir + Platform.pathSeparator + 'lib' + Platform.pathSeparator + 'src' + Platform.pathSeparator + 'exiv2_enums.dart';
 
 
 main() async {
@@ -30,22 +31,33 @@ main() async {
 
   var keys = exif.keys;
 
-  // C header with exif tag
-  var headerFile = new File(targetNativeFile);
-  var cEnumsHeaderTemplate = await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.h').readAsString();
+  // Generate C header with exif tag.
+  var headerFile = new File(targetCFile);
+  var cEnumsHeaderTemplate = await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.h.template').readAsString();
 
-  // Generate enum of all tags
+  // Generate enum of all tags.
   var tagsEnumContent = keys.map((String key) => '    ' + key.replaceAll('.', '_')).join(',\n');
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_TAGS_GO_HERE", tagsEnumContent);
 
-  // Generate enum of all data types
+  // Generate enum of all data types.
   var typeEnumContent = new Set.from(exif.values.map((String key) => '    ' + key.replaceAll('.', '_'))).join(',\n');
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_DATA_TYPES_GO_HERE", typeEnumContent);
 
-  // Generate list of tag => type pairs
+  // Generate list of tag => type pairs.
   var tagsDefinitionContent = keys.map((String key) => '    {ExifTag.${key.replaceAll('.', '_')}, ExifTagDataType.${exif[key]}}').join(',\n') + ',';
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_DEFINITIONS_GO_HERE", tagsDefinitionContent);
 
+  // Save to the target file
   headerFile.writeAsString(cEnumsHeaderTemplate);
+
+
+  // Generate Dart enums.
+  var dartFile = new File(targetDartFile);
+
+  var dartEnumsTemplate = await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.dart.template').readAsString();
+  dartEnumsTemplate = dartEnumsTemplate.replaceAll("// EXIF_TAGS_GO_HERE", tagsEnumContent);
+
+  // Save to the target file
+  dartFile.writeAsString(dartEnumsTemplate);
 
 }

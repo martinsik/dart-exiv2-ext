@@ -10,7 +10,6 @@ void main() {
 //  var dartExec = new File(Platform.executable).resolveSymbolicLinksSync();
 //  var dartSdkDir = new File(dartExec).parent.parent;
 
-
   test("Get EXIF metadata", () {
     // http://www.exiv2.org/tags.html
     var img1file = new File(testDir + Platform.pathSeparator + 'img1_with_exif.jpg');

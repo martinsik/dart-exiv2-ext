@@ -5,6 +5,7 @@
 //#include "exiv2_impl.h"
 #include "include/dart_native_api.h"
 #include "exiv2/exiv2.hpp"
+#include "exiv2_enums.h"
 
 
 void GetExifRecord(Dart_NativeArguments arguments) {
@@ -60,4 +61,9 @@ void GetAllExifRecords(Dart_NativeArguments arguments) {
 
     Dart_SetReturnValue(arguments, map);
     Dart_ExitScope();
+}
+
+void SetExifRecord(Dart_NativeArguments arguments) {
+//    tag_definition_list
+
 }
