@@ -4,3 +4,5 @@ dependencies:
     ccompile: "^0.2.9"
 dev_dependencies:
     test: any
+    xml: "^2.3.2"
+    simple_requests: "^0.1.0"
