@@ -6,18 +6,12 @@ _get(String filename, String key) native "GetExifRecord";
 
 class Exiv2File {
 
-  File _file;
-
-  Exiv2File(this._file);
-
-  Exiv2File.fromString(String filePath): this._file = new File(filePath);
-
-
-  Map<String, String> getAll() {
-    return _all(_file.path);
+  static Map<ExifTag, String> getAll(String file) {
+    return _all(file);
   }
 
-  String get(String key) {
-    return _get(_file.path, key);
+  static String get(String file, ExifTag tag) {
+    return stringToExifTag(_get(file, exifTagToString(tag)));
   }
+
 }

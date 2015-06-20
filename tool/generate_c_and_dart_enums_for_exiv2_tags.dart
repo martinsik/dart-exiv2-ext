@@ -44,7 +44,7 @@ main() async {
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_DATA_TYPES_GO_HERE", typeEnumContent);
 
   // Generate list of tag => type pairs.
-  var tagsDefinitionContent = keys.map((String key) => '    {ExifTag.${key.replaceAll('.', '_')}, ExifTagDataType.${exif[key]}}').join(',\n') + ',';
+  var tagsDefinitionContent = keys.map((String key) => '    {"${key}", ExifTag.${key.replaceAll('.', '_')}, ExifTagDataType.${exif[key]}}').join(',\n') + ',';
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_DEFINITIONS_GO_HERE", tagsDefinitionContent);
 
   // Save to the target file

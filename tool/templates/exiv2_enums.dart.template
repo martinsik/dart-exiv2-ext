@@ -1,5 +1,9 @@
 part of exiv2;
 
+String exifTagToString(ExifTag tag) {
+    return tag.toString().split('.')[1];
+}
+
 enum ExifTag {
 // EXIF_TAGS_GO_HERE
 }

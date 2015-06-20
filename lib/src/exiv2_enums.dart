@@ -1,5 +1,13 @@
 part of exiv2;
 
+String exifTagToString(ExifTag tag) {
+    return tag.toString().split('.')[1];
+}
+
+ExifTag stringToExifTag(String tagString) {
+    return ExifTag.values.firstWhere((tag) => tagString == tag.toString().split('.')[1]);
+}
+
 enum ExifTag {
     Exif_Image_ProcessingSoftware,
     Exif_Image_NewSubfileType,

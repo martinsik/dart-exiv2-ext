@@ -10,6 +10,7 @@
  */
 
 struct ExifTagDefinition {
+    const char *name;
     ExifTag tag;
     ExifTagDataType type;
 };
@@ -24,7 +25,7 @@ typedef enum {
 
 ExifTagDefinition tag_definition_list[] = {
 // EXIF_DEFINITIONS_GO_HERE
-    {NULL, NULL}
+    {NULL, NULL, NULL}
 };
 
 #endif
