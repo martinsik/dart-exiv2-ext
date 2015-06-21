@@ -36,28 +36,30 @@ main() async {
   var cEnumsHeaderTemplate = await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.h.template').readAsString();
 
   // Generate enum of all tags.
-  var tagsEnumContent = keys.map((String key) => '    ' + key.replaceAll('.', '_')).join(',\n');
+  var tagsEnumContent = keys.map((String key) => '    ExifTag_' + key.replaceAll('.', '_')).join(',\n');
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_TAGS_GO_HERE", tagsEnumContent);
 
   // Generate enum of all data types.
-  var typeEnumContent = new Set.from(exif.values.map((String key) => '    ' + key.replaceAll('.', '_'))).join(',\n');
+  var typeEnumContent = new Set.from(exif.values.map((String key) => '    ExifData_' + key.replaceAll('.', '_'))).join(',\n');
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_DATA_TYPES_GO_HERE", typeEnumContent);
 
   // Generate list of tag => type pairs.
-  var tagsDefinitionContent = keys.map((String key) => '    {"${key}", ExifTag.${key.replaceAll('.', '_')}, ExifTagDataType.${exif[key]}}').join(',\n') + ',';
+  var tagsDefinitionContent = keys.map((String key) => '    {"${key}", ExifTag_${key.replaceAll('.', '_')}, ExifData_${exif[key]}}').join(',\n') + ',';
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_DEFINITIONS_GO_HERE", tagsDefinitionContent);
 
   // Save to the target file
   headerFile.writeAsString(cEnumsHeaderTemplate);
+  print("Saved to: ${headerFile.path}");
 
 
   // Generate Dart enums.
   var dartFile = new File(targetDartFile);
 
+  var dartTtagsEnumContent = keys.map((String key) => '    ' + key.replaceAll('.', '_')).join(',\n');
   var dartEnumsTemplate = await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.dart.template').readAsString();
-  dartEnumsTemplate = dartEnumsTemplate.replaceAll("// EXIF_TAGS_GO_HERE", tagsEnumContent);
+  dartEnumsTemplate = dartEnumsTemplate.replaceAll("// EXIF_TAGS_GO_HERE", dartTtagsEnumContent);
 
   // Save to the target file
   dartFile.writeAsString(dartEnumsTemplate);
-
+  print("Saved to: ${dartFile.path}");
 }

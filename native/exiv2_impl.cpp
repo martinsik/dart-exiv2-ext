@@ -25,7 +25,7 @@ void GetExifRecord(Dart_NativeArguments arguments) {
         Exiv2::ExifData::const_iterator pos = exifData.findKey(key);
         result = Dart_NewStringFromCString(pos->value().toString().c_str());
     } catch (Exiv2::AnyError &e) {
-        result = result = Dart_Null();
+        result = Dart_Null();
     }
 
     Dart_SetReturnValue(arguments, result);
