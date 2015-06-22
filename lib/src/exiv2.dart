@@ -22,7 +22,7 @@ class Exiv2 {
 
   static String get(String file, ExifTag tag) {
 //    print(exifTagToString(tag));
-    var val = _get(file, exifTagToString(tag));
+//    var val = _get(file, exifTagToString(tag));
 //    print(val);
     return _get(file, exifTagToString(tag));
   }
