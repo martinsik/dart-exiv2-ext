@@ -64,7 +64,7 @@ void GetAllExifRecords(Dart_NativeArguments arguments) {
     Dart_ExitScope();
 }
 
-void SetExifRecord(Dart_NativeArguments arguments) {
+void SetExifRecords(Dart_NativeArguments);
 //    tag_definition_list
 
 }

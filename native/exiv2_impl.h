@@ -6,5 +6,6 @@
 
 void GetExifRecord(Dart_NativeArguments);
 void GetAllExifRecords(Dart_NativeArguments);
+void SetExifRecords(Dart_NativeArguments);
 
 #endif //DART_EXIV2_EXT_EXIV2_IMPL_H
