@@ -6,6 +6,10 @@ find_path(exiv2_HEADERS_DIR "exiv2/exiv2.hpp")
 
 # Get full path to the Dart executable.
 execute_process(COMMAND which dart OUTPUT_VARIABLE DART_EXEC OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+if (NOT DART_EXEC)
+    message(FATAL_ERROR "Error: Unable to find dart executable!")
+endif (NOT DART_EXEC)
 # Expand symlinks.
 get_filename_component(DART_EXEC ${DART_EXEC} REALPATH)
 
