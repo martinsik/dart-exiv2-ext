@@ -64,7 +64,34 @@ void GetAllExifRecords(Dart_NativeArguments arguments) {
     Dart_ExitScope();
 }
 
-void SetExifRecords(Dart_NativeArguments);
+void SetExifRecords(Dart_NativeArguments arguments) {
 //    tag_definition_list
+    Dart_EnterScope();
+    const char *filename;
 
+    Dart_StringToCString(Dart_GetNativeArgument(arguments, 0), &filename);
+    Dart_Handle exifTags = Dart_GetNativeArgument(arguments, 1);
+    Dart_Handle keys = Dart_MapKeys(exifTags);
+
+    intptr_t length;
+    Dart_ListLength(keys, &length);
+    printf("%lu\n", length);
+
+    for (int i = 0; i < length; i++) {
+        const char *tag;
+        const char *value;
+
+        Dart_Handle key = Dart_ListGetAt(keys, i);
+        Dart_StringToCString(key, &tag);
+//        printf("%s\n", tag);
+
+        Dart_StringToCString(Dart_MapGetAt(exifTags, key), &value);
+//        printf("%s\n", value);
+
+    }
+
+    Dart_Handle response = Dart_True();
+
+    Dart_SetReturnValue(arguments, response);
+    Dart_ExitScope();
 }

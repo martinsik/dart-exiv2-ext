@@ -39,6 +39,7 @@ struct FunctionLookup {
 FunctionLookup function_list[] = {
     {"GetAllExifRecords", GetAllExifRecords},
     {"GetExifRecord", GetExifRecord},
+    {"SetExifRecords", SetExifRecords},
     {NULL, NULL}
 };
 

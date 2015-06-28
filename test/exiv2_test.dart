@@ -14,7 +14,6 @@ void main() {
     // http://www.exiv2.org/tags.html
     var img1file = testDir + Platform.pathSeparator + 'img1_with_exif.jpg';
 
-//    var exiv2Test1 = new Exiv2File(img1file);
     var exifData = Exiv2.getAll(img1file);
 
     expect(exifData, containsPair('Exif.Image.DateTime', '2011:09:10 15:26:42'));
@@ -28,9 +27,27 @@ void main() {
 
   test("Image with no EXIF metadata", () {
     var img1file = testDir + Platform.pathSeparator + 'img1_no_exif.jpg';
-//    var exiv2Test1 = new Exiv2File.fromString(img1file.path);
 
     expect(Exiv2.getAll(img1file), isEmpty);
+  });
+
+  test("Setting EXIF metadata", () {
+    var img1file = testDir + Platform.pathSeparator + 'img1_no_exif.jpg';
+    var testImg = testDir + Platform.pathSeparator + '_test_img1_no_exif.jpg';
+
+    var orig = new File(img1file);
+    orig.copySync(testImg);
+
+    var testTags = {
+      ExifTag.Exif_Image_Orientation: 2,
+      ExifTag.Exif_Image_ImageLength: 2048,
+      ExifTag.Exif_Image_TargetPrinter: "Test Printer 123",
+      ExifTag.Exif_Image_WhitePoint: "2/3"
+    };
+
+    Exiv2.setMap(testImg, testTags);
+
+    new File(testImg).deleteSync();
   });
 
 }
