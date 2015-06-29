@@ -10,6 +10,7 @@
  */
 
 typedef enum {
+    ExifTag_Unknown,
     ExifTag_Exif_Image_ProcessingSoftware,
     ExifTag_Exif_Image_NewSubfileType,
     ExifTag_Exif_Image_SubfileType,
@@ -810,6 +811,7 @@ typedef enum {
 } ExifTag_Type;
 
 typedef enum {
+    ExifData_Unknown,
     ExifData_Ascii,
     ExifData_Long,
     ExifData_Short,

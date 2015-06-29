@@ -5,9 +5,69 @@
 //#include "exiv2_impl.h"
 #include "include/dart_native_api.h"
 #include "exiv2/exiv2.hpp"
+#include "exiv2_enums.h"
 #include <string.h>
-//#include "exiv2_enums.h"
 
+
+Dart_Handle create_state_error(const char *message) {
+
+    Dart_Handle type = Dart_GetType(Dart_LookupLibrary(Dart_NewStringFromCString("dart:core")),
+                                    Dart_NewStringFromCString("StateError"), 0, NULL);
+
+    Dart_Handle error;
+    if (message == NULL) {
+        error = Dart_New(type, Dart_Null(), 0, NULL);
+    } else {
+        Dart_Handle args[1];
+        args[0] = Dart_NewStringFromCString(message);
+        error = Dart_New(type, Dart_Null(), 1, args);
+    }
+
+    return error;
+}
+
+
+ExifTag_Type str_to_tag_type(const char *tag_name) {
+    int i = 0;
+    while (tag_definition_list[i].name != NULL) {
+        ExifTagDefinition tag_def = tag_definition_list[i];
+        if (strcmp(tag_def.name, tag_name) == 0) {
+            return tag_def.tag;
+        }
+        i++;
+    }
+    return ExifTag_Unknown;
+}
+
+void set_exif_tag(Exiv2::ExifData *exifData, const char *tag, const char *value) {
+    ExifTag_Type tag_type = str_to_tag_type(tag);
+    if (tag_type == ExifTag_Unknown) {
+        Dart_Handle error = Dart_NewUnhandledExceptionError(create_state_error("This tag doesn't exist"));
+        Dart_PropagateError(error);
+    }
+
+    int i = 0;
+    while (tag_definition_list[i].name != NULL) {
+        ExifTagDefinition tagDef = tag_definition_list[i];
+
+        // printf("%s\n", tag_definition_list[i].name);
+
+        if (tag_type == tagDef.tag) {
+            if (tagDef.type == ExifData_Ascii) {
+                (*exifData)[tag] = value;
+            } else {
+                char *message = (char *)malloc(128);
+                sprintf(message, "Value \"%s\" is not supported for tag \"%s\"", value, tag);
+                Dart_Handle error = Dart_NewUnhandledExceptionError(create_state_error(message));
+                Dart_PropagateError(error);
+                // Should reach this point because of Dart_PropagateError.
+                return;
+            }
+        }
+        i++;
+    }
+
+}
 
 void GetExifRecord(Dart_NativeArguments arguments) {
     Dart_EnterScope();
@@ -75,7 +135,11 @@ void SetExifRecords(Dart_NativeArguments arguments) {
 
     intptr_t length;
     Dart_ListLength(keys, &length);
-    printf("%lu\n", length);
+    // printf("%lu\n", length);
+
+    Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
+    image->readMetadata();
+    Exiv2::ExifData &exifData = image->exifData();
 
     for (int i = 0; i < length; i++) {
         const char *tag;
@@ -83,14 +147,18 @@ void SetExifRecords(Dart_NativeArguments arguments) {
 
         Dart_Handle key = Dart_ListGetAt(keys, i);
         Dart_StringToCString(key, &tag);
-//        printf("%s\n", tag);
+        // printf("%s\n", tag);
 
         Dart_StringToCString(Dart_MapGetAt(exifTags, key), &value);
-//        printf("%s\n", value);
+        // printf("%s\n", value);
 
+        set_exif_tag(&exifData, tag, value);
     }
 
-    Dart_Handle response = Dart_True();
+    image->setExifData(exifData);
+    image->writeMetadata();
+
+    Dart_Handle response = Dart_Null();
 
     Dart_SetReturnValue(arguments, response);
     Dart_ExitScope();

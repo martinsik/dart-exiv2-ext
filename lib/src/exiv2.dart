@@ -17,22 +17,44 @@ ExifTag stringToExifTag(String str) {
 
 class Exiv2 {
 
-  static Map<ExifTag, String> getAll(String file) {
-    return _all(file);
+  static String _verifiedFilePath(var file) {
+    String path = _getFilePath(file);
+    if (!(new File(path).existsSync())) {
+      throw new Exception("This file doesn't exist");
+    }
+    return path;
   }
 
-  static String get(String file, ExifTag tag) {
-    return _get(file, exifTagToString(tag));
+  static String _getFilePath(var file) {
+    if (file is File) {
+      return (file as File).path;
+    } else if (file is String) {
+      return file;
+    } else {
+      throw new Exception("Use String or File objects only");
+    }
   }
 
-  static bool setMap(String file, Map<ExifTag, dynamic> exifTags) {
-    // Force string values
+
+  static Map<ExifTag, String> getAll(var file) {
+    return _all(_verifiedFilePath(file));
+  }
+
+  static String get(var file, ExifTag tag) {
+    return _get(_verifiedFilePath(file), exifTagToString(tag));
+  }
+
+  static void setMap(var file, Map<ExifTag, dynamic> exifTags) {
+    // Force string keys and values
     var normalizedMap = {};
-    exifTags.forEach((ExifTag tag, dynamic value) {
+    exifTags.forEach((ExifTag tag, var value) {
       normalizedMap[exifTagToString(tag)] = value.toString();
     });
-    return _set(file, normalizedMap);
+    _set(_verifiedFilePath(file), normalizedMap);
+  }
+
+  static void setTag(var file, ExifTag tag, var value) {
+    setMap(file, {tag: value});
   }
 
 }
-

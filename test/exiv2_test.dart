@@ -10,6 +10,11 @@ void main() {
 //  var dartExec = new File(Platform.executable).resolveSymbolicLinksSync();
 //  var dartSdkDir = new File(dartExec).parent.parent;
 
+  test("Exception for non-existing file", () {
+    expect(() => Exiv2.get('/foo/bar', ExifTag.Exif_Image_Model), throwsException);
+    expect(() => Exiv2.get(123, ExifTag.Exif_Image_Model), throwsException);
+  });
+
   test("Get EXIF metadata", () {
     // http://www.exiv2.org/tags.html
     var img1file = testDir + Platform.pathSeparator + 'img1_with_exif.jpg';
@@ -22,6 +27,7 @@ void main() {
     expect(exifData, containsPair('Exif.Photo.ExposureTime', '1/500'));
 
     expect(Exiv2.get(img1file, ExifTag.Exif_Photo_FNumber), equals('7/2'));
+    // Missing record
     expect(Exiv2.get(img1file, ExifTag.Exif_GPSInfo_GPSDestLatitudeRef), isNull);
   });
 
@@ -31,23 +37,33 @@ void main() {
     expect(Exiv2.getAll(img1file), isEmpty);
   });
 
-  test("Setting EXIF metadata", () {
+  group("Modify test files: ", () {
     var img1file = testDir + Platform.pathSeparator + 'img1_no_exif.jpg';
     var testImg = testDir + Platform.pathSeparator + '_test_img1_no_exif.jpg';
 
-    var orig = new File(img1file);
-    orig.copySync(testImg);
+    setUp(() {
+      new File(img1file).copySync(testImg);
+    });
 
-    var testTags = {
-      ExifTag.Exif_Image_Orientation: 2,
-      ExifTag.Exif_Image_ImageLength: 2048,
-      ExifTag.Exif_Image_TargetPrinter: "Test Printer 123",
-      ExifTag.Exif_Image_WhitePoint: "2/3"
-    };
+    tearDown(() {
+      new File(testImg).deleteSync();
+    });
 
-    Exiv2.setMap(testImg, testTags);
+    test("Setting EXIF metadata", () {
+      var testTags = {
+//        ExifTag.Exif_Image_Orientation: 2,
+  //      ExifTag.Exif_Image_ImageLength: 2048,
+        ExifTag.Exif_Image_Model: 'Camera model',
+  //      ExifTag.Exif_Image_WhitePoint: "2/3"
+      };
 
-    new File(testImg).deleteSync();
+      Exiv2.setMap(testImg, testTags);
+
+      expect(Exiv2.get(testImg, ExifTag.Exif_Image_Model), equals('Camera model'));
+
+    });
+
+
   });
 
 }
