@@ -3,6 +3,8 @@ part of exiv2;
 _all(String filename) native "GetAllExifRecords";
 _get(String filename, String key) native "GetExifRecord";
 _set(String filename, Map exifTags) native "SetExifRecords";
+_remove(String filename, List tags) native "RemoveExifRecord";
+_removeAll(String filename) native "RemoveAllExifRecords";
 
 
 String exifTagToString(ExifTag tag) {
@@ -16,6 +18,8 @@ ExifTag stringToExifTag(String str) {
 
 
 class Exiv2 {
+
+  // @todo: Maybe this class should also be able to convert tags into labels.
 
   static String _verifiedFilePath(var file) {
     String path = _getFilePath(file);
@@ -35,7 +39,6 @@ class Exiv2 {
     }
   }
 
-
   static Map<ExifTag, String> getAll(var file) {
     return _all(_verifiedFilePath(file));
   }
@@ -54,7 +57,17 @@ class Exiv2 {
   }
 
   static void setTag(var file, ExifTag tag, var value) {
-    setMap(file, {tag: value});
+    setMap(_verifiedFilePath(file), {tag: value});
   }
 
+  static bool remove(var file, var tags) {
+    if (!(tags is List)) {
+      tags = [tags];
+    }
+    return _remove(_verifiedFilePath(file), tags.map((ExifTag tag) => exifTagToString(tag)).toList());
+  }
+
+  static void removeAll(var file) {
+    _removeAll(_verifiedFilePath(file));
+  }
 }

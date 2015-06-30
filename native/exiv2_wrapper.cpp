@@ -40,6 +40,8 @@ FunctionLookup function_list[] = {
     {"GetAllExifRecords", GetAllExifRecords},
     {"GetExifRecord", GetExifRecord},
     {"SetExifRecords", SetExifRecords},
+    {"RemoveExifRecord", RemoveExifRecord},
+    {"RemoveAllExifRecords", RemoveAllExifRecords},
     {NULL, NULL}
 };
 

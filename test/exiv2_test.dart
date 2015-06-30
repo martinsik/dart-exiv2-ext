@@ -49,21 +49,61 @@ void main() {
       new File(testImg).deleteSync();
     });
 
-    test("Setting EXIF metadata", () {
-      var testTags = {
-//        ExifTag.Exif_Image_Orientation: 2,
-  //      ExifTag.Exif_Image_ImageLength: 2048,
-        ExifTag.Exif_Image_Model: 'Camera model',
-  //      ExifTag.Exif_Image_WhitePoint: "2/3"
-      };
+    group('Modifying tags: ', () {
 
-      Exiv2.setMap(testImg, testTags);
+      test("Non-existing tag EXIF metadata", () {
+        expect(() => Exiv2.setTag(new File(testImg), ExifTag.Exif_Image_JPEGTables, 'undefined'), throwsStateError);
+      });
 
-      expect(Exiv2.get(testImg, ExifTag.Exif_Image_Model), equals('Camera model'));
+      test("Setting and removing multiple EXIF metadata", () {
+        var testTags1 = {
+          ExifTag.Exif_Image_DotRange: 6, // Byte
+          ExifTag.Exif_Image_Orientation: 2, // Short
+          ExifTag.Exif_Image_XClipPathUnits: -4, // SShort
+          ExifTag.Exif_Image_ImageLength: 2048 // Long
+        };
+        var testTags2 = {
+          ExifTag.Exif_Image_ImageWidth: 8192, // Long
+          ExifTag.Exif_Image_Model: 'Camera model', // Ascii
+          ExifTag.Exif_Image_YResolution: "2/3", // Rational
+          ExifTag.Exif_Image_WhitePoint: "-4/7" // Rational
+        };
+
+        Exiv2.setMap(testImg, testTags1);
+        Exiv2.setMap(testImg, testTags2);
+
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_DotRange), equals('6'));
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_Orientation), equals('2'));
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_XClipPathUnits), equals('-4'));
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_ImageLength), equals('2048'));
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_ImageWidth), equals('8192'));
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_Model), equals('Camera model'));
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_YResolution), equals('2/3'));
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_WhitePoint), equals('-4/7'));
+
+        // Remove single tag
+        expect(Exiv2.remove(testImg, ExifTag.Exif_Image_DotRange), isTrue);
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_DotRange), isNull);
+
+        // Remove all tags
+        Exiv2.removeAll(testImg);
+        expect(Exiv2.getAll(testImg), isEmpty);
+      });
+
+      test("Single EXIF metadata", () {
+        Exiv2.setTag(testImg, ExifTag.Exif_Image_Model, 'Camera model');
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_Model), equals('Camera model'));
+      });
+
+      test("Rewrite same EXIF tag multiple times", () {
+        Exiv2.setTag(testImg, ExifTag.Exif_Image_Model, 'Camera model #1');
+        Exiv2.setTag(testImg, ExifTag.Exif_Image_Model, 'Camera model #2');
+        Exiv2.setTag(testImg, ExifTag.Exif_Image_Model, 'Camera model #3');
+
+        expect(Exiv2.get(testImg, ExifTag.Exif_Image_Model), equals('Camera model #3'));
+      });
 
     });
-
-
   });
 
 }

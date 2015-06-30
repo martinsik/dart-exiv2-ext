@@ -55,6 +55,40 @@ void set_exif_tag(Exiv2::ExifData *exifData, const char *tag, const char *value)
         if (tag_type == tagDef.tag) {
             if (tagDef.type == ExifData_Ascii) {
                 (*exifData)[tag] = value;
+            } else if (tagDef.type == ExifData_Short) {
+                (*exifData)[tag] = uint16_t(atoi(value));
+            } else if (tagDef.type == ExifData_SShort) {
+                (*exifData)[tag] = int16_t(atoi(value));
+            } else if (tagDef.type == ExifData_Long) {
+                (*exifData)[tag] = uint32_t(atol(value));
+            } else if (tagDef.type == ExifData_SLong) {
+                (*exifData)[tag] = int32_t(value);
+            } else if (tagDef.type == ExifData_Double) {
+                Exiv2::DoubleValue::AutoPtr val(new Exiv2::DoubleValue);
+                val->read(value);
+                (*exifData).add(Exiv2::ExifKey(tag), val.get());
+            } else if (tagDef.type == ExifData_Float) {
+                Exiv2::FloatValue::AutoPtr val(new Exiv2::FloatValue);
+                val->read(value);
+                (*exifData).add(Exiv2::ExifKey(tag), val.get());
+            } else if (tagDef.type == ExifData_Byte) {
+                (*exifData)[tag] = uint8_t(atoi(value));
+            } else if (tagDef.type == ExifData_SByte) {
+//                (*exifData)[tag] = int8_t(atoi(value));
+                printf("%d\n", int8_t(atoi(value)));
+            } else if (tagDef.type == ExifData_Rational || tagDef.type == ExifData_SRational) {
+                size_t pos = (size_t)(strchr(value, '/') - value);
+                char *numerator = (char *)malloc(32);
+                char *denumerator = (char *)malloc(32);
+                strncpy(numerator, value, pos);
+                numerator[pos] = '\0';
+                strncpy(denumerator, value + pos + 1, 32);
+
+                if (tagDef.type == ExifData_Rational) {
+                    (*exifData)[tag] = Exiv2::Rational(atoi(numerator), atoi(denumerator));
+                } else {
+                    (*exifData)[tag] = Exiv2::URational(atoi(numerator), atoi(denumerator));
+                }
             } else {
                 char *message = (char *)malloc(128);
                 sprintf(message, "Value \"%s\" is not supported for tag \"%s\"", value, tag);
@@ -161,5 +195,53 @@ void SetExifRecords(Dart_NativeArguments arguments) {
     Dart_Handle response = Dart_Null();
 
     Dart_SetReturnValue(arguments, response);
+    Dart_ExitScope();
+}
+
+void RemoveExifRecord(Dart_NativeArguments arguments) {
+    Dart_EnterScope();
+    const char *filename;
+
+    Dart_Handle response = Dart_False();
+
+    Dart_StringToCString(Dart_GetNativeArgument(arguments, 0), &filename);
+    Dart_Handle list = Dart_GetNativeArgument(arguments, 1);
+
+    intptr_t length;
+    Dart_ListLength(list, &length);
+
+    Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
+    image->readMetadata();
+    Exiv2::ExifData &exifData = image->exifData();
+
+    for (int i = 0; i < length; i++) {
+        const char *tag;
+        Dart_StringToCString(Dart_ListGetAt(list, i), &tag);
+
+        Exiv2::ExifKey key(tag);
+        Exiv2::ExifData::iterator pos = exifData.findKey(key);
+        if (pos != exifData.end()) { // tag found
+            exifData.erase(pos);
+            response = Dart_True();
+        }
+    }
+    image->setExifData(exifData);
+    image->writeMetadata();
+
+    Dart_SetReturnValue(arguments, response);
+    Dart_ExitScope();
+}
+
+void RemoveAllExifRecords(Dart_NativeArguments arguments) {
+    Dart_EnterScope();
+    const char *filename;
+
+    Dart_StringToCString(Dart_GetNativeArgument(arguments, 0), &filename);
+
+    Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
+    image->clearExifData();
+    image->writeMetadata();
+
+    Dart_SetReturnValue(arguments, Dart_Null());
     Dart_ExitScope();
 }
