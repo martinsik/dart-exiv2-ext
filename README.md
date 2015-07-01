@@ -1,4 +1,4 @@
-# dart-exiv2-ext
+# dart-exiv2
 
 Dart VM native extension wrapper for Exiv2 library ([exiv2.org](exiv2.org)).
 
@@ -88,6 +88,6 @@ Note that you need to run `refresh.sh` from `native/build` directory to avoid me
 
 ## License
 
-dart-exiv2-ext is licensed under MIT license.
+dart-exiv2 is licensed under MIT license.
 
 Exiv2 ([exiv2.org](http://www.exiv2.org/)) is licensed under GNU General Public License.
