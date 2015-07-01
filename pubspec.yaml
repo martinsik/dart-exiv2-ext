@@ -1,8 +1,8 @@
 name: exiv2
-version: 0.1.0
+version: 0.1.1
+author: Martin Sikora <martin.sikora.ahoj@gmail.com>
 description: Dart VM native extension wrapper for exiv2 library for manipulating EXIF metadata
 homepage: https://github.com/martinsik/dart-exiv2-ext
-author: Martin Sikora
 dependencies:
   test: "^0.12.0"
 dev_dependencies:

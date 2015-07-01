@@ -6,7 +6,6 @@ _set(String filename, Map exifTags) native "SetExifRecords";
 _remove(String filename, List tags) native "RemoveExifRecord";
 _removeAll(String filename) native "RemoveAllExifRecords";
 
-
 String exifTagToString(ExifTag tag) {
   return tag.toString().split('.')[1].replaceAll('_', '.');
 }
@@ -15,7 +14,6 @@ ExifTag stringToExifTag(String str) {
   var normStr = str.replaceAll('.', '_');
   return ExifTag.values.firstWhere((ExifTag tag) => tag.toString().split('.')[1] == normStr);
 }
-
 
 class Exiv2 {
 

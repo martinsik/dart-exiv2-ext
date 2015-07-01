@@ -4,12 +4,16 @@ import 'dart:io';
 import 'package:simple_requests/simple_requests.dart';
 import 'package:xml/xml.dart';
 
-
 var packageRootDir = (new Directory.fromUri(Platform.script).parent.parent).path;
 var templateDir = packageRootDir + Platform.pathSeparator + 'tool' + Platform.pathSeparator + 'templates';
 var targetCFile = packageRootDir + Platform.pathSeparator + 'native' + Platform.pathSeparator + 'exiv2_enums.h';
-var targetDartFile = packageRootDir + Platform.pathSeparator + 'lib' + Platform.pathSeparator + 'src' + Platform.pathSeparator + 'exiv2_enums.dart';
-
+var targetDartFile = packageRootDir +
+    Platform.pathSeparator +
+    'lib' +
+    Platform.pathSeparator +
+    'src' +
+    Platform.pathSeparator +
+    'exiv2_enums.dart';
 
 main() async {
   var urls = [
@@ -52,7 +56,8 @@ main() async {
 
   // C header with exif tag.
   var headerFile = new File(targetCFile);
-  var cEnumsHeaderTemplate = await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.h.template').readAsString();
+  var cEnumsHeaderTemplate =
+      await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.h.template').readAsString();
 
   // Generate enum of all tags.
   var tagsEnumContent = tags.keys.map((String key) => '    ExifTag_' + key.replaceAll('.', '_'));
@@ -61,10 +66,12 @@ main() async {
   var dataTypeEnumContent = new Set.from(tags.values).map((String key) => '    ExifData_' + key.replaceAll('.', '_'));
 
   // Generate list of tag => type pairs.
-  var tagsDefinitionContent = tags.keys.map((String key) => '    {"${key}", ExifTag_${key.replaceAll('.', '_')}, ExifData_${tags[key]}}');
+  var tagsDefinitionContent =
+      tags.keys.map((String key) => '    {"${key}", ExifTag_${key.replaceAll('.', '_')}, ExifData_${tags[key]}}');
 
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_TAGS_GO_HERE", tagsEnumContent.join(',\n'));
-  cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_DEFINITIONS_GO_HERE", tagsDefinitionContent.join(',\n') + ',');
+  cEnumsHeaderTemplate =
+      cEnumsHeaderTemplate.replaceAll("// EXIF_DEFINITIONS_GO_HERE", tagsDefinitionContent.join(',\n') + ',');
   cEnumsHeaderTemplate = cEnumsHeaderTemplate.replaceAll("// EXIF_DATA_TYPES_GO_HERE", dataTypeEnumContent.join(',\n'));
 
   // Save to the target file
@@ -74,7 +81,8 @@ main() async {
   // Generate Dart enums.
   var dartFile = new File(targetDartFile);
   var dartTagsEnumContent = tags.keys.map((String key) => '    ' + key.replaceAll('.', '_'));
-  var dartEnumsTemplate = await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.dart.template').readAsString();
+  var dartEnumsTemplate =
+      await new File(templateDir + Platform.pathSeparator + 'exiv2_enums.dart.template').readAsString();
   dartEnumsTemplate = dartEnumsTemplate.replaceAll("// EXIF_TAGS_GO_HERE", dartTagsEnumContent.join(',\n'));
 
   // Save to the target file

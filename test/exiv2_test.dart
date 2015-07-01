@@ -5,7 +5,6 @@ import 'package:test/test.dart';
 import 'package:exiv2/exiv2.dart';
 
 void main() {
-
   var testDir = Directory.current.path + Platform.pathSeparator + 'test';
 //  var dartExec = new File(Platform.executable).resolveSymbolicLinksSync();
 //  var dartSdkDir = new File(dartExec).parent.parent;
@@ -50,7 +49,6 @@ void main() {
     });
 
     group('Modifying tags: ', () {
-
       test("Non-existing tag EXIF metadata", () {
         expect(() => Exiv2.setTag(new File(testImg), ExifTag.Exif_Image_JPEGTables, 'undefined'), throwsStateError);
       });
@@ -102,8 +100,6 @@ void main() {
 
         expect(Exiv2.getTag(testImg, ExifTag.Exif_Image_Model), equals('Camera model #3'));
       });
-
     });
   });
-
 }
