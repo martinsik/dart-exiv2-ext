@@ -40,10 +40,14 @@ class Exiv2 {
   }
 
   static Map<ExifTag, String> getAll(var file) {
-    return _all(_verifiedFilePath(file));
+    var response = {};
+    _all(_verifiedFilePath(file)).forEach((String tag, String value) {
+      response[stringToExifTag(tag)] = value;
+    });
+    return response;
   }
 
-  static String get(var file, ExifTag tag) {
+  static String getTag(var file, ExifTag tag) {
     return _get(_verifiedFilePath(file), exifTagToString(tag));
   }
 

@@ -3,7 +3,7 @@ library exiv2.test.enums;
 import 'dart:io';
 import 'dart:async';
 import 'package:test/test.dart';
-import 'package:dart-exiv2-ext/exiv2.dart';
+import 'package:exiv2/exiv2.dart';
 
 void main() {
   test("Enum conversions to string", () {
